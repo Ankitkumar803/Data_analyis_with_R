@@ -1,0 +1,277 @@
+---
+title: "Assignment-1"
+author: "Ankit kumar"
+date: "04/03/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Q1
+
+
+```{r cars}
+movies = read.csv("D:/Downloads/Q1_MA5755_2.csv")
+
+summary(movies)
+
+barplot(movies$Time.series.,names.arg=movies$TV.series,xlab = "Series",
+        ylab = "Time (hours)")
+
+barplot(movies$TIme.movies.,names.arg=movies$movies,xlab = "Movies",
+        ylab = "Time (hours)")
+```
+
+## Q2
+
+
+```{r pressure, echo=FALSE}
+data = read.csv("D:/Downloads/Q2.csv")
+summary(data)
+hist(data$Time.max.concentration.,xlab = "time",breaks=12)
+```
+
+<p>From histogram plot , we can see that maximum people felt that their concentration are high at evening. so for 
+Group study <strong>18:00 to 23:00</strong> will be best</p>
+
+## Q3
+
+<p>X = features<br />
+c = no of categories <span class="math inline">\(\omega_{1}\)</span>,
+<span class="math inline">\(\omega_{2}\)</span>, …, <span
+class="math inline">\(\omega_{3}\)</span><br />
+l = no of actions <span class="math inline">\(\alpha_{1}\)</span> ,
+<span class="math inline">\(\alpha_{2}\)</span> , … , <span
+class="math inline">\(\alpha_{l}\)</span><br />
+loss function = <span
+class="math inline">\(\lambda(\alpha_{i}/    \omega_{j})\)</span> - the
+cost associated with taking action <span
+class="math inline">\(\alpha_{i}\)</span> when the correct
+classification category is <span
+class="math inline">\(\omega_{j}\)</span><br />
+Suppose for x and we have taken action <span
+class="math inline">\(\alpha_{i}\)</span> and that the cost associated
+with taking action <span class="math inline">\(\alpha_{i}\)</span> with
+<span class="math inline">\(\omega_{j}\)</span> being the correct
+category is <span
+class="math inline">\(\lambda(\alpha_{i}/    \omega_{j})\)</span><br />
+The conditional risk (or expected loss) with taking action <span
+class="math inline">\(\alpha_{i}\)</span> is:</p>
+<p><span class="math display">\[\sum_{j=1}^{c} \lambda
+(a_{i}/\omega_{j}) P(\omega_{j}/ x)\]</span> Put , loss function as
+following, <span class="math display">\[\lambda(a_{i}/\omega_{j})=  
+    \begin{cases}
+        0 \quad &amp;\text{if} \, i=j \\
+        1 \quad &amp;\text{if} \, i\neq j \\
+     \end{cases}\]</span></p>
+<p>Hence for zero-one loss, the conditional risk corresponding to this
+loss function: <span class="math display">\[R(a_{i}/X) =
+\sum_{j=1}^{c}\lambda(a_{i}/\omega_{j})P(\omega_{j}/X)= \sum_{i\neq
+j}P(\omega_{j}/x)=1-P(\omega_{i}/x)\]</span></p>
+<p>For zero-one loss function, the decision rule becomes:<br />
+Decide <span class="math inline">\(\omega_{1}\)</span> if <span
+class="math inline">\(R(a_{1}/X)\)</span> &lt; <span
+class="math inline">\(R(a_{2}/X);\)</span> otherwise decide <span
+class="math inline">\(\omega_{2}\)</span><br />
+or<br />
+Decide <span class="math inline">\(\omega_{1}\)</span> if 1-<span
+class="math inline">\(P(\omega_{1}/X)\)</span> &lt; 1 - <span
+class="math inline">\(P(\omega_{2}/X);\)</span> otherwise decide <span
+class="math inline">\(\omega_{2}\)</span><br />
+or<br />
+Decide <span class="math inline">\(\omega_{1}\)</span> if <span
+class="math inline">\(P(\omega_{1}/X)\)</span> &gt; <span
+class="math inline">\(P(\omega_{2}/X);\)</span> otherwise decide <span
+class="math inline">\(\omega_{2}\)</span><br />
+Hence in this case, the overall risk is the average probability
+error.</p>
+
+## Q4
+```{r}
+library(class)
+x_test_1 = 0
+Y_test_1 = exp(-8*x_test_1)
+X = NULL
+sq_error = NULL
+
+
+for (p in 1:10) {
+  X = NULL
+  for (x in 1:1000) {
+    
+    X1 = 0
+    for (q in 1:p) {
+      X2 = runif(1,min=-1,max=1)^2
+      X1 = X1 + X2
+      
+    }
+    
+    X = c(X,X1)
+  }
+  
+  Y = exp(-8*X)
+  classifier_knn <- knn(train = X,
+                        test = x_test_1,
+                        cl = Y,
+                        k = 1)
+  
+  sq_error1 = (as.numeric(as.character(classifier_knn)) - Y_test_1)^2
+
+  sq_error = c(sq_error,sq_error1)
+  
+  
+  }
+
+plot(1:10,sq_error, xlab = "p", ylab = "squared error",pch = 19,cex=1.5)
+```
+<p>From the plot, we can see that as diamension(p) increases the squared error increases, this is due to fact that
+points are far appart in higher diamension that the lower ones <strong>(curse of dimensionality)</strong>.</p>
+
+## Q5
+```{r}
+library("MASS") 
+library(class)                              # for knn
+
+for (i in c(100,500)) {
+  n1 <- i*0.8 # Specify sample size
+  n2 <- i*0.2
+  
+  mean1 <- c(3,0)                                  # Specify the means of the variables
+  mean2 <- c(0,3)
+  covar_mat <- matrix(c(1, 0, 0, 1),                 # Specify the covariance matrix of the variables
+                      ncol = 2)
+  
+  data1 = mvrnorm(n = n1, mu = mean1, Sigma = covar_mat)
+  data2 = mvrnorm(n = n2, mu = mean2, Sigma = covar_mat)
+  
+  data3 = mvrnorm(n = n1, mu = mean2, Sigma = covar_mat)
+  data4 = mvrnorm(n = n2, mu = mean1, Sigma = covar_mat)
+  
+  data_blue1 = rbind(data1, data2)                    # rbind - row-wise bind , cbind - column-wise bind
+  data_red1 = rbind(data3, data4)
+  
+  data_final1 = rbind(data_blue1,data_red1)
+
+  
+  Y_blue = matrix(0, i, 1)
+  Y_red = matrix(1,i,1)
+  Y_final1 = rbind(Y_blue,Y_red)
+  
+  data_all1 = cbind(data_final1,Y_final1)
+  
+  nam <- paste("data_all", i, sep = "")                         # dynamic naming
+  assign(nam, data_all1[sample(nrow(data_all1)),])              # randomly arranging the data
+
+  
+  plot(data_blue1, col = "blue" , pch= 19, xlab = "var1",ylab="var2")
+
+  points(data_red1, col = "red" , pch = 19 )           # cant combine , therefore using points
+  
+  misClassError = NULL
+  if(i==100){test1 = data_all100[,1:2]; actual = data_all100[,3]} 
+  else {test1 = data_all500[,1:2]; actual = data_all500[,3]}
+  
+  for (e in c(1,10,100,150,200)) {
+    classifier_knn_i <- knn(train = data_all100[,1:2],
+                          test = test1,
+                          cl = data_all100[,3],
+                          k = e)
+    
+    classifier_knn = as.numeric(classifier_knn_i)   # converting from factor to numeric
+    classifier_knn = classifier_knn - 1     # classifier giving 1 and 2 as output, therefore making it to 0 and 1
+   
+    
+    misClassError1 <- sum((classifier_knn - actual)^2)/(2*i)
+    
+    misClassError = c(misClassError, misClassError1)
+    
+    
+  }
+  
+  plot(c(1,10,100,150,200),misClassError,xlab = "k", ylab = "mean loss function",type ="b",pch = 19, col = "red")
+  
+}
+```
+
+## Q6 a)
+```{r}
+data6 <- read.csv("D:/Downloads/data6.csv")
+model<-lm(y ~ x1 + x2 + x3 + cat_variable + x7, data=data6)
+summary(model)    # p-values
+```
+<p>From above, <strong> p-value: < 2.2e-16 </strong> </p>
+```{r}
+plot(model)       # residual plots
+confint(model)    #confindence intervals
+```
+<p>By seeing coefficients <strong>x1,cat_variable,x2</strong> are  statistically significant</p>
+<h3>b)</h3>
+```{r}
+#perform forward stepwise regression
+min_model <-lm(y ~ x1, data = data6)
+forward <- step(min_model, direction='forward', scope=formula(model), trace=0)
+#view results of forward stepwise regression
+forward$anova
+#view final model
+forward$coefficients
+```
+## Q7
+```{r}
+data7 = read.csv("D:/Downloads/data7.csv")
+x1 = seq(-3, 3, by=0.1)
+model1 <- lm(data7[,2] ~ poly(data7[,3],1, raw = TRUE))
+model2 <- lm(data7[,2] ~ poly(data7[,3],2, raw = TRUE))
+model3 <- lm(data7[,2] ~ poly(data7[,3],3, raw = TRUE))
+model4 <- lm(data7[,2] ~ poly(data7[,3],4, raw = TRUE))
+model5 <- lm(data7[,2] ~ poly(data7[,3],5, raw = TRUE))
+
+plot(data7[,3],data7[,2] ,xlab = "x", ylab="y", xlim = c(-4,4))
+for (q in 1:5){
+  for (i in 0:q) {
+    if(q==1){model = model1
+    color = "orange"}
+    else if(q==2){model = model2
+    color = "red"}
+    else if(q==3){model = model3 
+    color="blue"}
+    else if(q==4){model = model4 
+    color = "black"}
+    else if(q==5){model = model5
+    color = "pink"}
+    y_fitted = model$coefficients[i+1]*x1^i
+    
+  }
+  if(q ==3){lwd = 3} else lwd =2
+  points(x1,y_fitted , col = color , type = "l",lwd = lwd)
+}
+
+legend(-4, 75, legend=c("p=1","p=2","p=3","p=4","p=5"),
+       col=c("orange","red","blue","black","pink"), lty=1:2, cex=0.8)
+```
+<p>We can see that for <strong>p=3</strong>, model is best fitted.Having <strong>p-value: < 2.2e-16</strong></p>
+```{r}
+summary(model3)   #for p = 3
+```
+## Q8
+```{r}
+library(car)
+data8 = read.csv("D:/Downloads/data8.csv")
+
+y = data8[,2]
+x1 = data8[,3]
+x2 = data8[,4]
+relation1 <- lm(y3~V2+V3, data=data8)
+
+summary(relation1)
+avPlots(relation1)
+plot(data8[,3],data8[,2] , col = "blue", xlab = "V2 and V3", ylab = "Y")
+points(data8[,4],data8[,2], col="red")
+abline(v=-2)
+abline(v=2.4)
+points(-0.7,7.2, cex=10, col = "green")
+
+```
+<p> The points inside green circle are <strong>outliers</strong> </p>
+<p>The points towards left and right of X = -2 and X = 2.4 respectivly are <strong>leverage points</strong></p>
